@@ -18,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install openjdk-11-jre-headless gd
         tesseract-ocr-eng tesseract-ocr-ita tesseract-ocr-fra tesseract-ocr-spa tesseract-ocr-deu
 
 RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y curl xfonts-utils fonts-freefont-ttf fonts-liberation ttf-mscorefonts-installer wget cabextract
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y xfonts-utils fonts-freefont-ttf fonts-liberation ttf-mscorefonts-installer wget cabextract
 
 FROM dependencies as fetch_tika
 ARG TIKA_VERSION
@@ -29,8 +29,8 @@ ENV NEAREST_TIKA_SERVER_URL="https://www.apache.org/dyn/closer.cgi/tika/tika-ser
     ARCHIVE_TIKA_SERVER_ASC_URL="https://archive.apache.org/dist/tika/tika-server-${TIKA_VERSION}.jar.asc" \
     TIKA_VERSION=$TIKA_VERSION
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gnupg2 curl wget \
-    && curl -sSL https://www.apache.org/dist/tika/KEYS | gpg --import \
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install gnupg2 \
+    && wget -qO- https://www.apache.org/dist/tika/KEYS | gpg --import \
     && wget $NEAREST_TIKA_SERVER_URL -O /tika-server-${TIKA_VERSION}.jar || rm /tika-server-${TIKA_VERSION}.jar \
     && sh -c "[ -f /tika-server-${TIKA_VERSION}.jar ]" || wget $ARCHIVE_TIKA_SERVER_URL -O /tika-server-${TIKA_VERSION}.jar || rm /tika-server-${TIKA_VERSION}.jar \
     && wget $DEFAULT_TIKA_SERVER_ASC_URL -O /tika-server-${TIKA_VERSION}.jar.asc  || rm /tika-server-${TIKA_VERSION}.jar.asc \
